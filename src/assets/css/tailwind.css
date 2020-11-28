@@ -13,7 +13,7 @@ body::-webkit-scrollbar {
 }
 
 .overlay {
-    position: relative; 
+    position: relative;
 }
 
 /* 1024 -1 so it doesnt show when it hits 1024px */
@@ -30,4 +30,12 @@ body::-webkit-scrollbar {
         pointer-events: none;
         position: fixed;
     }
+}
+
+
+/* my own css */
+
+.icon {
+  display: inline;
+  vertical-align: bottom;
 }
