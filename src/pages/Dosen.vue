@@ -182,7 +182,7 @@ export default {
         this.$axios(options)
           .then(response => {
             this.dosen_data = response.data['data']
-            console.log(this.dosen_data);
+            // console.log(this.dosen_data);
           })
           .catch(error => console.log(error))
       },
