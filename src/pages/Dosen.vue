@@ -26,7 +26,19 @@
           Tambah Data
         </button>
       </div>
-
+      <div v-if="success_message!==''" role="alert">
+        <div class="bg-green-500 text-white font-bold rounded-t px-4 py-2">
+          Sukses
+          <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" @click="successMessage('')">
+            <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+              ×
+            </span>
+          </button>
+        </div>
+        <div class="border border-t-0 border-green-400 rounded-b bg-green-100 px-4 py-3 text-green-700">
+          <p>Data berhasil {{success_message}}.</p>
+        </div>
+      </div>
       <div class="flex flex-wrap -mx-3 mb-20">
         <div class="w-full" data-app>
           <v-data-table
@@ -51,13 +63,10 @@
                 <td>{{row.item.alamat}}</td>
                 <td style="width:auto">
                   <div class="flex justify-center">
-                    <button class="text-black bg-yellow-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="selectDataSuratMasuk(row.item)" title="Edit Data">
+                    <button class="text-black bg-yellow-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="selectData(row.item); editModalShow = !editModalShow" title="Edit Data">
                         <i class="fa fa-pencil"></i>
                     </button>
-                    <button class="text-black bg-green-500 border border-solid border-green-600 font-bold hover:bg-green-400 active:bg-green-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="selectDisposisiDataSuratMasuk(row.item.id_surat_masuk)" title="Disposisi Surat">
-                        <i class="fa fa-share"></i>
-                    </button>
-                    <button class="text-black bg-red-500 border border-solid border-red-600 font-bold hover:bg-red-400 active:bg-red-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="deleteDataSuratMasuk(row.item.id_surat_masuk)" title="Hapus Data">
+                    <button class="text-black bg-red-500 border border-solid border-red-600 font-bold hover:bg-red-400 active:bg-red-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="deleteData(row.item.id_user)" title="Hapus Data">
                       <i class="fa fa-trash"></i>
                     </button>
                   </div>
@@ -76,7 +85,7 @@
           <!--content-->
           <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <!--header-->
-            <div class="flex items-start bg-blue-500 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
+            <div class="flex items-start bg-blue-300 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
               <h3 class="text-3xl font-semibold">
                 Tambah Data Dosen
               </h3>
@@ -125,7 +134,7 @@
                 </div>
               </div>
               <!--footer-->
-              <div class="flex items-center bg-blue-500 justify-end p-2 border-t border-solid border-gray-300 rounded-b">
+              <div class="flex items-center bg-blue-300 justify-end p-2 border-t border-solid border-gray-300 rounded-b">
                 <button class="text-black bg-gray-200 border border-solid border-gray-500 hover:bg-gray-200 hover:bg-gray-400 active:bg-gray-500 font-bold uppercase text-sm px-6 py-2 rounded outline-none focus:outline-none mr-1 mb-1" type="button" style="transition: all .15s ease" @click="addModalShow = !addModalShow">
                   Close
                 </button>
@@ -138,6 +147,75 @@
         </div>
       </div>
       <div v-if="addModalShow" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
+      <!-- ADD MODAL -->
+      <div v-if="editModalShow" class="overflow-x-hidden overflow-y-auto fixed md:mx-6 sm:px-6 inset-0 z-50 outline-none focus:outline-none justify-center items-center flex rounded">
+        <div class="relative w-3/4 my-6 mx-auto max-w-6xl mx-6">
+          <!--content-->
+          <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <!--header-->
+            <div class="flex items-start bg-yellow-300 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
+              <h3 class="text-3xl font-semibold">
+                Edit Data Dosen
+              </h3>
+              <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" @click="editModalShow = !editModalShow">
+                <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                  ×
+                </span>
+              </button>
+            </div>
+            <!--body-->
+            <form @submit.prevent="editData" id="editDataDosenForm">
+              <div class="relative p-6 flex-auto">
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-full px-3 mb-6 md:mb-0">
+                    <input type="hidden" v-model="editDataDosen.id_user" id="id_user">
+                    <input type="hidden" v-model="editDataDosen.id_dosen" id="id_dosen">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nama">
+                      Nama Lengkap
+                    </label>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="enama" type="text" placeholder="Nomor Surat" v-model="editDataDosen.nama" required>
+                    <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
+                  </div>
+                </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full px-3">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="isi_surat">
+                      Alamat
+                    </label>
+                    <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="ealamat" v-model="editDataDosen.alamat" required></textarea>
+                    <p class="text-gray-600 text-xs italic">Alamat</p>
+                  </div>
+                </div>
+                <!-- <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="username">
+                      Username atau Email
+                    </label>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="eusername" type="text" placeholder="Username" v-model="editDataDosen.username" required>
+                  </div>
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password">
+                      Password
+                    </label>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="epassword" type="text" placeholder="Password" v-model="editDataDosen.password" required>
+                  </div>
+                </div> -->
+              </div>
+              <!--footer-->
+              <div class="flex items-center bg-yellow-300 justify-end p-2 border-t border-solid border-gray-300 rounded-b">
+                <button class="text-black bg-gray-200 border border-solid border-gray-500 hover:bg-gray-200 hover:bg-gray-400 active:bg-gray-500 font-bold uppercase text-sm px-6 py-2 rounded outline-none focus:outline-none mr-1 mb-1" type="button" style="transition: all .15s ease" @click="editModalShow = !editModalShow">
+                  Close
+                </button>
+                <button type="submit" class="text-black bg-yellow-300 hover:bg-yellow-600 rounded background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"  style="transition: all .15s ease">
+                  Simpan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div v-if="editModalShow" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
     </div>
 </template>
 
@@ -160,7 +238,9 @@ export default {
           ],
           search: '',
           addModalShow: false,
+          editModalShow: false,
           addDataDosen: {},
+          editDataDosen: {},
           success_message: ''
         }
     },
@@ -175,7 +255,7 @@ export default {
     methods: {
       getData: function(){
         const options = {
-          url: `${api_url}/dosen`,
+          url: `${api_url}/getDataDosen`,
           method: 'GET'
         }
 
@@ -227,6 +307,41 @@ export default {
 
         this.addModalShow = !this.addModalShow
         e.preventDefault();
+      },
+      selectData: function(row){
+         this.editDataDosen = {
+           id_user: `${row.id_user}`,
+           id_dosen: `${row.id_dosen}`,
+           nama: `${row.nama}`,
+           alamat: `${row.alamat}`,
+           // username: `${row.username}`,
+           // password: (`${row.password}`).replace(/./g, '*')
+         }
+      },
+      editData: function(){
+        this.$axios
+          .put(`${api_url}/dosen/${this.editDataDosen.id_dosen}`, this.editDataDosen)
+          .then(data => {
+            this.getData();
+            this.editModalShow = !this.editModalShow
+            this.successMessage('diupdate');
+          }).catch(err => {
+            console.error(err);
+          });
+      },
+      deleteData: function(id){
+        this.$confirm("Apakah Kamu yakin ingin menghapus data ini?").then(conf => {
+          if(conf){
+            this.$axios
+              .delete(`${api_url}/users/${id}`)
+              .then(data => {
+                this.getData();
+                this.successMessage('dihapus');
+              }).catch(err => {
+                console.error(err);
+              })
+          }
+        });
       },
       getUniqid: function(){
         let uniqid = require('uniqid');

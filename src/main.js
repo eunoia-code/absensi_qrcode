@@ -10,6 +10,7 @@ import Login from '@/components/Login'
 import store from './store'
 
 import '@/assets/css/tailwind.css'
+import VueSimpleAlert from "vue-simple-alert";
 
 // import axios from 'axios';
 // import VueAxios from 'vue-axios';
@@ -20,7 +21,7 @@ import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import 'font-awesome/css/font-awesome.css'
 
 let vuePlugins = [
-  AxiosPlugin, vuetify
+  AxiosPlugin, vuetify, VueSimpleAlert
 ];
 vuePlugins.forEach((x) => Vue.use(x));
 Vue.config.productionTip = false
