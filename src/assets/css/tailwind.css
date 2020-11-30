@@ -39,3 +39,7 @@ body::-webkit-scrollbar {
   display: inline;
   vertical-align: bottom;
 }
+
+.modal {
+  transition: opacity 0.25s ease;
+}

@@ -1,5 +1,5 @@
 <template>
-    <div id="dosen">
+    <div id="mahasiswa">
 
         <!-- breadcrumb -->
         <nav class="text-sm font-semibold mb-6" aria-label="Breadcrumb">
@@ -9,7 +9,7 @@
               <svg class="fill-current w-3 h-3 mx-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/></svg>
             </li>
             <li class="flex items-center">
-              <a href="#" class="text-gray-600">Dosen</a>
+              <a href="#" class="text-gray-600">Mahasiswa</a>
             </li>
           </ol>
         </nav>
@@ -64,6 +64,8 @@
                 <td>{{row.item.username}}</td>
                 <!-- <td>{{row.item.password}}</td> -->
                 <td>{{row.item.alamat}}</td>
+                <td>{{row.item.nim}}</td>
+                <td>{{row.item.angkatan}}</td>
                 <td style="width:auto">
                   <div class="flex justify-center">
                     <button class="text-black bg-yellow-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="selectData(row.item); editModalShow = !editModalShow" title="Edit Data">
@@ -90,7 +92,7 @@
             <!--header-->
             <div class="flex items-start bg-blue-500 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
               <h3 class="text-3xl font-semibold text-white">
-                Tambah Data Dosen
+                Tambah Data Mahasiswa
               </h3>
               <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" @click="addModalShow = !addModalShow">
                 <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -99,23 +101,39 @@
               </button>
             </div>
             <!--body-->
-            <form @submit.prevent="insertData" id="addDataDosenForm">
+            <form @submit.prevent="insertData" id="addDataMahasiswaForm">
               <div class="relative p-6 flex-auto">
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-full px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nama">
                       Nama Lengkap
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="addDataDosen.nama" required>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="addDataMahasiswa.nama" required>
                     <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                   </div>
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full px-3">
-                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="isi_surat">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="alamat">
                       Alamat
                     </label>
-                    <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="addDataDosen.alamat" required></textarea>
+                    <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="addDataMahasiswa.alamat" required></textarea>
+                  </div>
+                </div>
+                <div class="flex flex-wrap -mx-3 mb-6">
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nim">
+                      NIM
+                    </label>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nim" type="text" placeholder="Nomor Induk" v-model="addDataMahasiswa.nim" required>
+                    <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
+                  </div>
+                  <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="angkatan">
+                      Angkatan
+                    </label>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="angkatan" type="text" placeholder="Angkatan" v-model="addDataMahasiswa.angkatan" required>
+                    <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                   </div>
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
@@ -123,14 +141,14 @@
                     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="username">
                       Username atau Email
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="addDataDosen.username" required>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="addDataMahasiswa.username" required>
                     <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                   </div>
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password">
                       Password
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="password" type="text" placeholder="Password" v-model="addDataDosen.password" required>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="password" type="text" placeholder="Password" v-model="addDataMahasiswa.password" required>
                     <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                   </div>
                 </div>
@@ -158,7 +176,7 @@
             <!--header-->
             <div class="flex items-start bg-yellow-300 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
               <h3 class="text-3xl font-semibold">
-                Edit Data Dosen
+                Edit Data Mahasiswa
               </h3>
               <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" @click="editModalShow = !editModalShow">
                 <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -167,17 +185,16 @@
               </button>
             </div>
             <!--body-->
-            <form @submit.prevent="editData" id="editDataDosenForm">
+            <form @submit.prevent="editData" id="editDataMahasiswaForm">
               <div class="relative p-6 flex-auto">
                 <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-full px-3 mb-6 md:mb-0">
-                    <input type="hidden" v-model="editDataDosen.id_user" id="id_user">
-                    <input type="hidden" v-model="editDataDosen.id_dosen" id="id_dosen">
+                    <input type="hidden" v-model="editDataMahasiswa.id_user" id="id_user">
+                    <input type="hidden" v-model="editDataMahasiswa.id_mahasiswa" id="id_mahasiswa">
                     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nama">
                       Nama Lengkap
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="editDataDosen.nama" required>
-                    <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="enama" type="text" placeholder="Nomor Surat" v-model="editDataMahasiswa.nama" required>
                   </div>
                 </div>
                 <div class="flex flex-wrap -mx-3 mb-6">
@@ -185,24 +202,24 @@
                     <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="isi_surat">
                       Alamat
                     </label>
-                    <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="ealamat" v-model="editDataDosen.alamat" required></textarea>
+                    <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="ealamat" v-model="editDataMahasiswa.alamat" required></textarea>
                     <p class="text-gray-600 text-xs italic">Alamat</p>
                   </div>
                 </div>
-                <!-- <div class="flex flex-wrap -mx-3 mb-6">
+                <div class="flex flex-wrap -mx-3 mb-6">
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="username">
-                      Username atau Email
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nim">
+                      NIM
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="eusername" type="text" placeholder="Username" v-model="editDataDosen.username" required>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nim" type="text" placeholder="Nomor Induk" v-model="editDataMahasiswa.nim" required>
                   </div>
                   <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password">
-                      Password
+                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="angkatan">
+                      Angkatan
                     </label>
-                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="epassword" type="text" placeholder="Password" v-model="editDataDosen.password" required>
+                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="angkatan" type="text" placeholder="Angkatan" v-model="editDataMahasiswa.angkatan" required>
                   </div>
-                </div> -->
+                </div>
               </div>
               <!--footer-->
               <div class="flex items-center bg-yellow-300 justify-end p-2 border-t border-solid border-gray-300 rounded-b">
@@ -226,29 +243,31 @@ import axios from 'axios';
 const api_url = 'http://localhost:8080/api';
 
 export default {
-    name: 'Dosen',
+    name: 'Mahasiswa',
     data() {
         return {
-          dosen_data: [],
+          mahasiswa_data: [],
           headers: [
              { text: 'No.', value: 'num' },
              { text: 'Nama', value: 'nama' },
              { text: 'Username', value: 'username' },
              // { text: 'password', value: 'password' },
              { text: 'Alamat', value: 'alamat' },
+             { text: 'NIM', value: 'nim' },
+             { text: 'Angkatan', value: 'angkatan' },
              { text: 'Pilihan' },
           ],
           search: '',
           addModalShow: false,
           editModalShow: false,
-          addDataDosen: {},
-          editDataDosen: {},
+          addDataMahasiswa: {},
+          editDataMahasiswa: {},
           success_message: ''
         }
     },
     computed: {
       items() {
-        return this.dosen_data.map((d, index) => ({
+        return this.mahasiswa_data.map((d, index) => ({
           ...d,
           num: index + 1
         }))
@@ -257,14 +276,14 @@ export default {
     methods: {
       getData: function(){
         const options = {
-          url: `${api_url}/dosen`,
+          url: `${api_url}/mahasiswa`,
           method: 'GET'
         }
 
         this.$axios(options)
           .then(response => {
-            this.dosen_data = response.data['data']
-            console.log(this.dosen_data);
+            this.mahasiswa_data = response.data['data']
+            console.log(this.mahasiswa_data);
           })
           .catch(error => console.log(error))
       },
@@ -274,9 +293,9 @@ export default {
         this.$axios
           .post(`${api_url}/users`, {
             id_user: id_user,
-            username: `${this.addDataDosen.username}`,
-            password: `${this.addDataDosen.password}`,
-            level: 1
+            username: `${this.addDataMahasiswa.username}`,
+            password: `${this.addDataMahasiswa.password}`,
+            level: 2
           }, {
           headers: {
             'Content-type': 'application/x-www-form-urlencoded',
@@ -290,11 +309,13 @@ export default {
         });
 
         this.$axios
-          .post(`${api_url}/dosen`, {
-            id_dosen: this.getUniqid(),
+          .post(`${api_url}/mahasiswa`, {
+            id_mahasiswa: this.getUniqid(),
             id_user: id_user,
-            nama: `${this.addDataDosen.nama}`,
-            alamat: `${this.addDataDosen.alamat}`
+            nama: `${this.addDataMahasiswa.nama}`,
+            alamat: `${this.addDataMahasiswa.alamat}`,
+            nim: `${this.addDataMahasiswa.nim}`,
+            angkatan: `${this.addDataMahasiswa.angkatan}`
           }, {
           headers: {
             'Content-type': 'application/x-www-form-urlencoded',
@@ -311,18 +332,20 @@ export default {
         e.preventDefault();
       },
       selectData: function(row){
-         this.editDataDosen = {
+         this.editDataMahasiswa = {
            id_user: `${row.id_user}`,
-           id_dosen: `${row.id_dosen}`,
+           id_mahasiswa: `${row.id_mahasiswa}`,
            nama: `${row.nama}`,
            alamat: `${row.alamat}`,
+           nim: `${row.nim}`,
+           angkatan: `${row.angkatan}`
            // username: `${row.username}`,
            // password: (`${row.password}`).replace(/./g, '*')
          }
       },
       editData: function(){
         this.$axios
-          .put(`${api_url}/dosen/${this.editDataDosen.id_dosen}`, this.editDataDosen)
+          .put(`${api_url}/mahasiswa/${this.editDataMahasiswa.id_mahasiswa}`, this.editDataMahasiswa)
           .then(data => {
             this.getData();
             this.editModalShow = !this.editModalShow
