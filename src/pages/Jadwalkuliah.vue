@@ -342,7 +342,7 @@
 
 <script>
 import axios from 'axios';
-const api_url = 'http://localhost:8080/api';
+// const BASE_API = 'http://localhost:8080/api';
 
 export default {
     name: 'Jadwalkuliah',
@@ -405,15 +405,15 @@ export default {
       },
       getData: function(){
         const options = {
-          url: `${api_url}/jadwalkuliah`,
+          url: this.$store.state.url.BASE_API + `/jadwalkuliah`,
           method: 'GET'
         }
         const optionsMk = {
-          url: `${api_url}/matakuliah`,
+          url: this.$store.state.url.BASE_API + `/matakuliah`,
           method: 'GET'
         }
         const optionsDosen = {
-          url: `${api_url}/dosen`,
+          url: this.$store.state.url.BASE_API + `/dosen`,
           method: 'GET'
         }
 
@@ -438,7 +438,7 @@ export default {
       },
       insertData: function(e){
         this.$axios
-          .post(`${api_url}/jadwalkuliah`, {
+          .post(this.$store.state.url.BASE_API + `/jadwalkuliah`, {
             id_mk: `${this.addDataJadwal.id_mk}`,
             id_user: `${this.addDataJadwal.id_user}`,
             tgl_jadwal: `${this.dateFormatted}`,
@@ -476,7 +476,7 @@ export default {
       },
       editData: function(){
         this.$axios
-          .put(`${api_url}/jadwalkuliah/${this.editDataJadwal.id_jadwal}`, this.editDataJadwal)
+          .put(this.$store.state.url.BASE_API + `/jadwalkuliah/${this.editDataJadwal.id_jadwal}`, this.editDataJadwal)
           .then(data => {
             this.getData();
             this.editModalShow = !this.editModalShow
@@ -489,7 +489,7 @@ export default {
         this.$confirm("Apakah Kamu yakin ingin menghapus data ini?").then(conf => {
           if(conf){
             this.$axios
-              .delete(`${api_url}/jadwalkuliah/${id}`)
+              .delete(this.$store.state.url.BASE_API + `/jadwalkuliah/${id}`)
               .then(data => {
                 this.getData();
                 this.successMessage('dihapus');

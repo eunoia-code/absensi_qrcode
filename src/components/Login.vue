@@ -2,7 +2,7 @@
   <div class="bg-teal-100 h-screen font-sans">
       <div class="container mx-auto h-full flex justify-center items-center">
           <div class="w-1/3">
-              <h1 class="font-hairline mb-6 text-center text-xl font-bold">Login</h1>
+              <h1 class="font-hairline mb-6 text-center text-xl font-bold">Aplikasi Absensi</h1>
               <div class="border-teal-500 p-8 border-t-12 bg-teal-300 mb-6 rounded-lg shadow-lg">
                 <form @submit.prevent="login">
                   <div class="mb-4">
@@ -22,9 +22,9 @@
                   </div>
                 </form>
               </div>
-              <div class="text-center">
+              <!-- <div class="text-center">
                   <p class="text-grey-dark text-sm">Don't have an account? <a href="#" class="no-underline text-blue font-bold">Create an Account</a>.</p>
-              </div>
+              </div> -->
           </div>
       </div>
   </div>
@@ -32,8 +32,8 @@
 
 <script>
 const base_url = 'http://localhost:8081/';
-const api_url = 'http://localhost:8080/api/';
-import Vue from 'vue'
+const api_url = 'http://localhost:8080/api';
+import Vue from 'vue';
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
@@ -47,14 +47,20 @@ export default {
   methods: {
     login: function() {
       if (this.username != '' && this.password != '') {
-        this.$axios.post(`${api_url}login`, {
+        this.$axios.post(`${api_url}/login`, {
           request: 1,
           username: this.username,
           password: this.password
         })
         .then(function(response) {
           console.log(response);
-          if (response.data['status'] == 1) {
+          if (response.data[0]) {
+            if (response.data[0].level == 0) {
+              localStorage.daftarAll = true;
+            } else {
+              localStorage.daftarAll = false;
+            }
+            localStorage.item = JSON.stringify(response.data[0]);
             alert('Login Successfully');
             window.location = `${base_url}`;
           } else {

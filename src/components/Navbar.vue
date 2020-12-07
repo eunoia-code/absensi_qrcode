@@ -11,7 +11,7 @@
                     <svg class="h-5 w-5" v-bind:style="{ fill: 'black' }" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
                   </button>
                 </div>
-
+                <p class="font-bold underline mr-2">Halo, {{namaUser}}!</p>
                 <!-- search bar -->
                 <!-- <div class="relative text-gray-600">
                   <input type="search" name="serch" placeholder="Search products..." class="bg-white h-10 w-full xl:w-64 px-5 rounded-lg border text-sm focus:outline-none">
@@ -33,9 +33,8 @@
 
             <!-- dropdown menu -->
             <div class="absolute bg-gray-100 border border-t-0 shadow-xl text-gray-700 rounded-b-lg w-48 bottom-10 right-0 mr-6" :class="dropDownOpen ? '' : 'hidden'">
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200">Account</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200">Settings</a>
-                <a href="#" class="block px-4 py-2 hover:bg-gray-200">Logout</a>
+                <!-- <p class="block px-4 py-2 font-bold underline">Halo, {{namaUser}}!</p> -->
+                <a href="#" class="block px-4 py-2 hover:bg-gray-200" @click="logout">Logout</a>
             </div>
             <!-- dropdown menu end -->
 
@@ -52,13 +51,60 @@ export default {
     },
     data() {
         return {
-            dropDownOpen: false
+            user_data: [],
+            dropDownOpen: false,
+            namaUser: '',
+            success_message: ''
         }
     },
     methods: {
+        getData: function(){
+          if (JSON.parse(localStorage.item).level == 2) {
+            this.$axios
+              .post(this.$store.state.url.BASE_API + `/showmahasiswa`, {
+                id_user: JSON.parse(localStorage.item).id_user
+              }, {
+              headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+              },
+            })
+            .then((data) => {
+              // console.log(data);
+              this.namaUser = data.data[0].nama
+            }).catch(err => {
+              console.error(err);
+            });
+          } else {
+            this.$axios
+              .post(this.$store.state.url.BASE_API + `/showdosen`, {
+                id_user: JSON.parse(localStorage.item).id_user
+              }, {
+              headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+              },
+            })
+            .then((data) => {
+              // console.log(data.data[0].nama);
+              this.namaUser = data.data[0].nama
+            }).catch(err => {
+              console.error(err);
+            });
+          }
+        },
         toggleSidebar() {
             this.$store.dispatch('toggleSidebar')
+        },
+        logout : function(){
+            localStorage.removeItem('item');
+            this.$router.push('/login');
+            // console.log("keluar");
+        },
+        successMessage: function(msg){
+          this.success_message = msg;
         }
+    },
+    mounted () {
+      this.getData()
     }
 }
 </script>

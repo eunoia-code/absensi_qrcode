@@ -240,7 +240,7 @@
 
 <script>
 import axios from 'axios';
-const api_url = 'http://localhost:8080/api';
+// const api_url = 'http://localhost:8080/api';
 
 export default {
     name: 'Mahasiswa',
@@ -276,7 +276,7 @@ export default {
     methods: {
       getData: function(){
         const options = {
-          url: `${api_url}/mahasiswa`,
+          url: this.$store.state.url.BASE_API + `/mahasiswa`,
           method: 'GET'
         }
 
@@ -291,7 +291,7 @@ export default {
         let id_user = this.getUniqid()
 
         this.$axios
-          .post(`${api_url}/users`, {
+          .post(this.$store.state.url.BASE_API + `/users`, {
             id_user: id_user,
             username: `${this.addDataMahasiswa.username}`,
             password: `${this.addDataMahasiswa.password}`,
@@ -309,7 +309,7 @@ export default {
         });
 
         this.$axios
-          .post(`${api_url}/mahasiswa`, {
+          .post(this.$store.state.url.BASE_API + `/mahasiswa`, {
             id_mahasiswa: this.getUniqid(),
             id_user: id_user,
             nama: `${this.addDataMahasiswa.nama}`,
@@ -345,7 +345,7 @@ export default {
       },
       editData: function(){
         this.$axios
-          .put(`${api_url}/mahasiswa/${this.editDataMahasiswa.id_mahasiswa}`, this.editDataMahasiswa)
+          .put(this.$store.state.url.BASE_API + `/mahasiswa/${this.editDataMahasiswa.id_mahasiswa}`, this.editDataMahasiswa)
           .then(data => {
             this.getData();
             this.editModalShow = !this.editModalShow
@@ -358,7 +358,7 @@ export default {
         this.$confirm("Apakah Kamu yakin ingin menghapus data ini?").then(conf => {
           if(conf){
             this.$axios
-              .delete(`${api_url}/users/${id}`)
+              .delete(this.$store.state.url.BASE_API + `/users/${id}`)
               .then(data => {
                 this.getData();
                 this.successMessage('dihapus');

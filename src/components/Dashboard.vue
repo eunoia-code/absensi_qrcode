@@ -35,6 +35,16 @@ export default {
     Sidebar,
     Navbar,
     Footer
+  },
+  methods: {
+    getData: function (){
+      console.log("anu");
+      // if (JSON.parse(localStorage.item).level != 0) {
+      //   // this.daftar = false
+      //   console.log("anu");
+      // }
+
+    },
   }
 }
 </script>

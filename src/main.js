@@ -4,6 +4,7 @@ import Router from 'vue-router'
 
 import Dashboard from '@/components/Dashboard'
 import DashboardHome from '@/pages/Home'
+import Daftaruser from '@/pages/Daftaruser'
 import Dosen from '@/pages/Dosen'
 import Mahasiswa from '@/pages/Mahasiswa'
 import Matakuliah from '@/pages/Matakuliah'
@@ -31,22 +32,48 @@ let vuePlugins = [
 vuePlugins.forEach((x) => Vue.use(x));
 Vue.config.productionTip = false
 
+function loggedInRedirectDashboard(to, from, next) {
+  if (localStorage.token) {
+    next('/');
+  } else {
+    next();
+  }
+}
+
+function isLoggedIn(to, from, next) {
+  if (localStorage.item) {
+    next();
+  } else {
+    next('/login');
+  }
+}
+
+function isAdmin(to, from, next) {
+  if (JSON.parse(localStorage.item).level == 0) {
+    next();
+  } else {
+    next('/');
+  }
+}
+
 const routes = [
-  { path: '/', redirect: { name: 'DashboardHome' } },
-  { path: '/admin', component: Dashboard, children: [
-      { path: '/', redirect: { name: 'DashboardHome' } },
-      { path: 'home', name: 'DashboardHome', component: DashboardHome },
-      { path: 'dosen', name: 'Dosen', component: Dosen },
-      { path: 'mahasiswa', name: 'Mahasiswa', component: Mahasiswa },
-      { path: 'matakuliah', name: 'Matakuliah', component: Matakuliah },
-      { path: 'jadwalkuliah', name: 'Jadwalkuliah', component: Jadwalkuliah },
-      { path: 'pengaturan', name: 'Pengaturan', component: Pengaturan }
-    ]
+  { path: '/', redirect: { name: 'DashboardHome', beforeEnter: isLoggedIn } },
+  { path: '/user', component: Dashboard, children: [
+      { path: '/', redirect: { name: 'DashboardHome', beforeEnter: isLoggedIn } },
+      { path: 'home', name: 'DashboardHome', component: DashboardHome, beforeEnter: isLoggedIn },
+      { path: 'daftaruser', name: 'Daftaruser', component: Daftaruser, beforeEnter: isAdmin },
+      { path: 'dosen', name: 'Dosen', component: Dosen, beforeEnter: isLoggedIn },
+      { path: 'mahasiswa', name: 'Mahasiswa', component: Mahasiswa, beforeEnter: isLoggedIn },
+      { path: 'matakuliah', name: 'Matakuliah', component: Matakuliah, beforeEnter: isLoggedIn },
+      { path: 'jadwalkuliah', name: 'Jadwalkuliah', component: Jadwalkuliah, beforeEnter: isLoggedIn },
+      { path: 'pengaturan', name: 'Pengaturan', component: Pengaturan, beforeEnter: isLoggedIn }
+    ], beforeEnter: isLoggedIn
   },
   {
     path: '/login',
     name: 'Login',
     component: Login,
+    beforeEnter: loggedInRedirectDashboard
   }
 ]
 

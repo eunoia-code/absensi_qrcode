@@ -25,23 +25,23 @@
             </h3>
           </div>
           <!--body-->
-          <form @submit.prevent="insertData" id="addDataDosenForm">
+          <form @submit.prevent="insertData" id="addDataUserForm">
             <div class="relative p-6 flex-auto">
               <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full md:w-full px-3 mb-6 md:mb-0">
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nama">
                     Nama Lengkap
                   </label>
-                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="addDataDosen.nama" required>
+                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="addDataUser.nama" required>
                   <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                 </div>
               </div>
               <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full px-3">
-                  <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="isi_surat">
+                  <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="alamat">
                     Alamat
                   </label>
-                  <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="addDataDosen.alamat" required></textarea>
+                  <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="addDataUser.alamat" required></textarea>
                 </div>
               </div>
               <div class="flex flex-wrap -mx-3 mb-6">
@@ -49,14 +49,14 @@
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="username">
                     Username atau Email
                   </label>
-                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="addDataDosen.username" required>
+                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="addDataUser.username" required>
                   <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                 </div>
                 <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="password">
                     Password
                   </label>
-                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="password" type="text" placeholder="Password" v-model="addDataDosen.password" required>
+                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="password" type="text" placeholder="Password" v-model="addDataUser.password" required>
                   <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                 </div>
               </div>
@@ -75,13 +75,13 @@
 
 <script>
 import axios from 'axios';
-const api_url = 'http://localhost:8080/api';
+// const api_url = 'http://localhost:8080/api';
 
 export default {
-    name: 'Dosen',
+    name: 'User',
     data() {
         return {
-          dosen_data: [],
+          user_data: [],
           headers: [
              { text: 'No.', value: 'num' },
              { text: 'Nama', value: 'nama' },
@@ -92,13 +92,13 @@ export default {
           ],
           search: '',
           addModalShow: false,
-          addDataDosen: {},
+          addDataUser: {},
           success_message: ''
         }
     },
     computed: {
       items() {
-        return this.dosen_data.map((d, index) => ({
+        return this.user_data.map((d, index) => ({
           ...d,
           num: index + 1
         }))
@@ -106,26 +106,39 @@ export default {
     },
     methods: {
       getData: function(){
-        const options = {
-          url: `${api_url}/dosen`,
-          method: 'GET'
+        if (JSON.parse(localStorage.item).level == 2) {
+          const options = {
+            url: this.$store.state.url.BASE_API + `/mahasiswa`,
+            method: 'POST'
+          }
+          this.$axios(options)
+            .then(response => {
+              this.user_data = response.data['data']
+              console.log(this.user_data);
+            })
+            .catch(error => console.log(error))
+        } else {
+          const options = {
+            url: this.$store.state.url.BASE_API + `/showdosen`,
+            method: 'POST'
+          }
+          this.$axios(options)
+            .then(response => {
+              this.user_data = response.data['data']
+              console.log(this.user_data);
+            })
+            .catch(error => console.log(error))
         }
 
-        this.$axios(options)
-          .then(response => {
-            this.dosen_data = response.data['data']
-            console.log(this.dosen_data);
-          })
-          .catch(error => console.log(error))
       },
       insertData: function(e){
         let id_user = this.getUniqid()
 
         this.$axios
-          .post(`${api_url}/users`, {
+          .post(this.$store.state.url.BASE_API + `/users`, {
             id_user: id_user,
-            username: `${this.addDataDosen.username}`,
-            password: `${this.addDataDosen.password}`,
+            username: `${this.addDataUser.username}`,
+            password: `${this.addDataUser.password}`,
             level: 1
           }, {
           headers: {
@@ -140,11 +153,11 @@ export default {
         });
 
         this.$axios
-          .post(`${api_url}/dosen`, {
+          .post(this.$store.state.url.BASE_API + `/dosen`, {
             id_dosen: this.getUniqid(),
             id_user: id_user,
-            nama: `${this.addDataDosen.nama}`,
-            alamat: `${this.addDataDosen.alamat}`
+            nama: `${this.addDataUser.nama}`,
+            alamat: `${this.addDataUser.alamat}`
           }, {
           headers: {
             'Content-type': 'application/x-www-form-urlencoded',

@@ -5,7 +5,10 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        sideBarOpen: false
+        sideBarOpen: false,
+        url : {
+            BASE_API : 'http://localhost:8080/api',
+        }
     },
     getters: {
         sideBarOpen: state => {
