@@ -29,10 +29,13 @@
             <div class="relative p-6 flex-auto">
               <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full md:w-full px-3 mb-6 md:mb-0">
+                  <input class="hidden" type="text" name="" id="" v-model="editDataUser.id_user">
+                  <input class="hidden" type="text" name="" id="" v-model="editDataUser.id_dosen">
+                  <input class="hidden" type="text" name="" id="" v-model="editDataUser.id_mahasiswa">
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="nama">
                     Nama Lengkap
                   </label>
-                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="addDataUser.nama" required>
+                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="nama" type="text" v-model="editDataUser.nama" required>
                   <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                 </div>
               </div>
@@ -41,7 +44,7 @@
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="alamat">
                     Alamat
                   </label>
-                  <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="addDataUser.alamat" required></textarea>
+                  <textarea class="resize-y appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline focus:border-gray-500" id="alamat" v-model="editDataUser.alamat" required></textarea>
                 </div>
               </div>
               <div class="flex flex-wrap -mx-3 mb-6">
@@ -49,7 +52,7 @@
                   <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="username">
                     Username atau Email
                   </label>
-                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="addDataUser.username" required>
+                  <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:shadow-outline hover:shadow-outline" id="username" type="text" placeholder="Username" v-model="editDataUser.username" required>
                   <!-- <p class="text-red-500 text-xs italic">Please fill out this field.</p> -->
                 </div>
                 <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
@@ -91,6 +94,7 @@ export default {
              { text: 'Pilihan' },
           ],
           search: '',
+          editDataUser: [],
           addModalShow: false,
           addDataUser: {},
           success_message: ''
@@ -107,70 +111,79 @@ export default {
     methods: {
       getData: function(){
         if (JSON.parse(localStorage.item).level == 2) {
-          const options = {
-            url: this.$store.state.url.BASE_API + `/mahasiswa`,
-            method: 'POST'
-          }
-          this.$axios(options)
-            .then(response => {
-              this.user_data = response.data['data']
-              console.log(this.user_data);
-            })
-            .catch(error => console.log(error))
+          this.$axios
+            .post(this.$store.state.url.BASE_API + `/showmahasiswa`, {
+              id_user: JSON.parse(localStorage.item).id_user
+            }, {
+            headers: {
+              'Content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then((data) => {
+            console.log(data);
+            this.selectData(data.data[0]);
+          }).catch(err => {
+            console.error(err);
+          });
         } else {
-          const options = {
-            url: this.$store.state.url.BASE_API + `/showdosen`,
-            method: 'POST'
-          }
-          this.$axios(options)
-            .then(response => {
-              this.user_data = response.data['data']
-              console.log(this.user_data);
-            })
-            .catch(error => console.log(error))
+          this.$axios
+            .post(this.$store.state.url.BASE_API + `/showdosen`, {
+              id_user: JSON.parse(localStorage.item).id_user
+            }, {
+              headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then((data) => {
+            console.log(data);
+            this.selectData(data.data[0]);
+          }).catch(err => {
+            console.error(err);
+          });
         }
 
       },
+      selectData: function(row){
+        if (JSON.parse(localStorage.item).level == 2) {
+          this.editDataUser = {
+            id_user: `${row.id_user}`,
+            id_mahasiswa: `${row.id_mahasiswa}`,
+            nama: `${row.nama}`,
+            alamat: `${row.alamat}`,
+            username: `${row.username}`
+          }
+        } else {
+          this.editDataUser = {
+            id_user: `${row.id_user}`,
+            id_dosen: `${row.id_dosen}`,
+            nama: `${row.nama}`,
+            alamat: `${row.alamat}`,
+            username: `${row.username}`
+          }
+        }
+      },
       insertData: function(e){
-        let id_user = this.getUniqid()
-
-        this.$axios
-          .post(this.$store.state.url.BASE_API + `/users`, {
-            id_user: id_user,
-            username: `${this.addDataUser.username}`,
-            password: `${this.addDataUser.password}`,
-            level: 1
-          }, {
-          headers: {
-            'Content-type': 'application/x-www-form-urlencoded',
-          },
-         })
-        .then((data) => {
-          this.getData();
-          this.successMessage('ditambahkan');
-        }).catch(err => {
-          console.error(err);
-        });
-
-        this.$axios
-          .post(this.$store.state.url.BASE_API + `/dosen`, {
-            id_dosen: this.getUniqid(),
-            id_user: id_user,
-            nama: `${this.addDataUser.nama}`,
-            alamat: `${this.addDataUser.alamat}`
-          }, {
-          headers: {
-            'Content-type': 'application/x-www-form-urlencoded',
-          },
-         })
-        .then((data) => {
-          this.getData();
-          this.successMessage('ditambahkan');
-        }).catch(err => {
-          console.error(err);
-        });
-
-        this.addModalShow = !this.addModalShow
+        if (JSON.parse(localStorage.item).level == 2) {
+          this.$axios
+          .put(this.$store.state.url.BASE_API + `/mahasiswa/${this.editDataUser.id_mahasiswa}`, this.editDataUser)
+          .then(data => {
+            this.getData();
+            this.editModalShow = !this.editModalShow
+            this.successMessage('diupdate');
+          }).catch(err => {
+            console.error(err);
+          });
+        } else {
+          this.$axios
+          .put(this.$store.state.url.BASE_API + `/dosen/${this.editDataUser.id_dosen}`, this.editDataUser)
+          .then(data => {
+            this.getData();
+            this.editModalShow = !this.editModalShow
+            this.successMessage('diupdate');
+          }).catch(err => {
+            console.error(err);
+          });
+        }
         e.preventDefault();
       },
       getUniqid: function(){

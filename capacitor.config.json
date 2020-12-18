@@ -1,9 +1,10 @@
 {
   "appId": "com.nurrachmanhs.absensiqr",
-  "appName": "AbsensiQRCode",
+  "appName": "Absensi QRCode",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
+  "server": { "cleartext": true, "androidScheme": "http", "allowNavigation": [ "192.168.1.103" ] },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0

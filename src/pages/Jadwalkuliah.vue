@@ -25,7 +25,7 @@
             hide-details
           ></v-text-field>
         </div>
-        <button @click="addModalShow = !addModalShow" class="bg-blue-500 hover:bg-blue-600 focus:outline-none rounded-lg px-3 py-1 text-white font-semibold shadow">
+        <button @click="addModalShow = !addModalShow" class="bg-blue-500 hover:bg-blue-600 focus:outline-none rounded-lg px-3 py-1 text-white font-semibold shadow" v-show="hapusJadwal">
           <i class="fa fa-plus-circle"></i> Tambah Data
         </button>
       </div>
@@ -65,7 +65,13 @@
                 <td>{{row.item.tgl_jadwal}}</td>
                 <td>{{row.item.waktu_jadwal}}</td>
                 <td style="width:auto">
-                  <div class="flex justify-center">
+                    <button class="text-black bg-green-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="daftarData(row.item);" title="Daftar" v-show="daftarJadwal">
+                        <i class="fa fa-list"></i>
+                    </button>
+                  <div class="flex justify-center" v-show="hapusJadwal">
+                    <button class="text-black bg-green-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="scanQrcode(row.item); scanModalShow = !scanModalShow" title="Scan QR Code">
+                        <i class="fa fa-qrcode"></i>
+                    </button>
                     <button class="text-black bg-yellow-500 border border-solid border-yellow-600 font-bold hover:bg-yellow-400 active:bg-yellow-200 uppercase text-sm py-2 px-4 rounded outline-none focus:outline-none m-1" @click="selectData(row.item); editModalShow = !editModalShow" title="Edit Data">
                         <i class="fa fa-pencil"></i>
                     </button>
@@ -337,23 +343,71 @@
         </div>
       </div>
       <div v-if="editModalShow" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
+      <!-- SCAN MODAL -->
+      <div v-if="scanModalShow" class="overflow-x-hidden overflow-y-auto fixed md:mx-6 sm:px-6 inset-0 z-50 outline-none focus:outline-none justify-center items-center flex rounded">
+        <div class="relative w-3/4 my-6 mx-auto max-w-6xl mx-6">
+          <!--content-->
+          <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <!--header-->
+            <div class="flex items-start bg-blue-500 justify-between p-2 border-b border-solid border-gray-300 rounded-t">
+              <h3 class="text-3xl font-semibold text-white">
+                Scan QR Code
+              </h3>
+              <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" @click="scanodalShow = !scanModalShow">
+                <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                  ×
+                </span>
+              </button>
+            </div>
+            <!--body-->
+            <!-- <form @submit.prevent="insertData" id="addDataJadwalForm"> -->
+              <div class="relative max-w-full">
+                <div class="flex justify-center">
+                  <!-- <p>{{value}}</p> -->
+                  <h1 v-show="hideAlertscan">Belum Masuk Jadwal Kuliah!</h1>
+                  <qrcode-vue :value="value" :size="size" level="H" v-show="hideQrcode"></qrcode-vue>
+                </div>
+              </div>
+              <!--footer-->
+              <div class="flex items-center bg-blue-500 justify-end p-2 border-t border-solid border-gray-300 rounded-b">
+                <button class="text-black bg-gray-200 border border-solid border-gray-500 hover:bg-gray-200 hover:bg-gray-400 active:bg-gray-500 font-bold uppercase text-sm px-6 py-2 rounded outline-none focus:outline-none mr-1 mb-1" type="button" style="transition: all .15s ease" @click="scanModalShow = !scanModalShow">
+                  Close
+                </button>
+                <!-- <button type="submit" class="text-black bg-teal-400 hover:bg-teal-600 rounded background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"  style="transition: all .15s ease">
+                  Simpan
+                </button> -->
+              </div>
+            <!-- </form> -->
+          </div>
+        </div>
+      </div>
+      <div v-if="scanModalShow" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import QrcodeVue from 'qrcode.vue';
 // const BASE_API = 'http://localhost:8080/api';
 
 export default {
     name: 'Jadwalkuliah',
+    components: { QrcodeVue },
     data() {
         return {
+          value: "",
+          size: (screen.width>screen.height ? screen.height-250 : screen.width-100),
           date: new Date().toISOString().substr(0, 10),
           dateFormatted: this.formatDate(new Date().toISOString().substr(0, 10)),
           waktu_jadwal: null,
+          waktu_absen: null,
           modal: false,
           date1: false,
           menu2: false,
+          daftarJadwal: JSON.parse(localStorage.daftarJadwal),
+          hapusJadwal: JSON.parse(localStorage.hapusJadwal),
+          daftar_jadwal: [],
           jadwal_data: [],
           mk_data: [],
           dosen_data: [],
@@ -368,6 +422,9 @@ export default {
           search: '',
           addModalShow: false,
           editModalShow: false,
+          scanModalShow: false,
+          hideQrcode: false,
+          hideAlertscan: true,
           addDataJadwal: {},
           editDataJadwal: {},
           success_message: ''
@@ -458,6 +515,34 @@ export default {
         this.addModalShow = !this.addModalShow
         e.preventDefault();
       },
+      scanQrcode: function(row){
+        this.date = new Date().toISOString().substr(0, 10);
+        // let d = new Date();
+        // let waktuSekarang = d.getHours()+":"+ d.getMinutes();
+        // console.log(row.waktu_jadwal)
+          if (this.dateFormatted == row.tgl_jadwal) {
+            this.$axios
+                .post(this.$store.state.url.BASE_API + '/rc4', {
+                  key: `tes`,
+                  string: `${row.tgl_jadwal + " " + row.waktu_jadwal}`
+                }, {
+                headers: {
+                  'Content-type': 'application/x-www-form-urlencoded',
+                },
+              })
+              .then((data) => {
+                this.value = data.data;
+                console.log(data)
+              }).catch(err => {
+                console.error(err);
+              });
+              this.hideQrcode = true;
+              this.hideAlertscan = false;
+            } else {
+              this.hideQrcode = false;
+              this.hideAlertscan = true;
+            }
+      },
       selectData: function(row){
          this.editDataJadwal = {
            id_jadwal: `${row.id_jadwal}`,
@@ -467,6 +552,24 @@ export default {
            waktu_jadwal: `${row.waktu_jadwal}`
          },
          this.dateFormatted = `${row.tgl_jadwal}`
+      },
+      daftarData: function(row){
+        this.$confirm("Anda Yakin Daftar Mata Kuliah Ini?").then(() => {
+          this.$axios
+            .post(this.$store.state.url.BASE_API + `/daftarmk`, {
+              id_jadwal: `${row.id_jadwal}`,
+              id_user: JSON.parse(localStorage.item).id_user
+            }, {
+            headers: {
+              'Content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then((data) => {
+            this.successMessage('ditambahkan');
+          }).catch(err => {
+            console.error(err);
+          });
+        });
       },
       console: function() {
         console.log(this.waktu_jadwal);

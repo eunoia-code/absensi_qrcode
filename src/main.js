@@ -8,7 +8,9 @@ import Daftaruser from '@/pages/Daftaruser'
 import Dosen from '@/pages/Dosen'
 import Mahasiswa from '@/pages/Mahasiswa'
 import Matakuliah from '@/pages/Matakuliah'
+import Daftarmk from '@/pages/Daftarmk'
 import Jadwalkuliah from '@/pages/Jadwalkuliah'
+import Absen from '@/pages/Absen'
 import Pengaturan from '@/pages/Pengaturan'
 import Login from '@/components/Login'
 
@@ -16,6 +18,9 @@ import store from './store'
 
 import '@/assets/css/tailwind.css'
 import VueSimpleAlert from "vue-simple-alert"
+import VueQrcodeReader from "vue-qrcode-reader";
+
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 // import axios from 'axios';
 // import VueAxios from 'vue-axios';
@@ -25,6 +30,8 @@ import vuetify from './plugins/vuetify';
 import 'vuetify/dist/vuetify.min.css'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import 'font-awesome/css/font-awesome.css'
+
+Vue.use(VueQrcodeReader);
 
 let vuePlugins = [
   AxiosPlugin, vuetify, VueSimpleAlert
@@ -65,7 +72,9 @@ const routes = [
       { path: 'dosen', name: 'Dosen', component: Dosen, beforeEnter: isLoggedIn },
       { path: 'mahasiswa', name: 'Mahasiswa', component: Mahasiswa, beforeEnter: isLoggedIn },
       { path: 'matakuliah', name: 'Matakuliah', component: Matakuliah, beforeEnter: isLoggedIn },
+      { path: 'daftarmk', name: 'Daftarmk', component: Daftarmk, beforeEnter: isLoggedIn },
       { path: 'jadwalkuliah', name: 'Jadwalkuliah', component: Jadwalkuliah, beforeEnter: isLoggedIn },
+      { path: 'absen', name: 'Absen', component: Absen, beforeEnter: isLoggedIn },
       { path: 'pengaturan', name: 'Pengaturan', component: Pengaturan, beforeEnter: isLoggedIn }
     ], beforeEnter: isLoggedIn
   },
@@ -88,3 +97,5 @@ new Vue({
   vuetify,
   store
 }).$mount('#app')
+
+defineCustomElements(window);
